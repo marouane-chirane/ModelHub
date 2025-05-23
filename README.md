@@ -1,26 +1,26 @@
-# ModelHub - Plateforme de Machine Learning et Deep Learning
+# ModelHub - Machine Learning and Deep Learning Platform
 
-ModelHub est une plateforme complète permettant de gérer, entraîner et déployer des modèles de machine learning et deep learning de manière simple et efficace.
+ModelHub is a comprehensive platform for managing, training, and deploying machine learning and deep learning models in a simple and efficient way.
 
-## Fonctionnalités Principales
+## Main Features
 
-- **Prétraitement des données**
-  - Traitement de texte
-  - Traitement d'images
-  - Nettoyage et préparation des données
+- **Data Preprocessing**
+  - Text processing
+  - Image processing
+  - Data cleaning and preparation
 
-- **Entraînement de modèles**
-  - Interface utilisateur intuitive
-  - Configuration des hyperparamètres
-  - Suivi des performances en temps réel
-  - Visualisation des résultats
+- **Model Training**
+  - Intuitive user interface
+  - Hyperparameter configuration
+  - Real-time performance monitoring
+  - Results visualization
 
-- **Gestion des modèles**
-  - Sauvegarde et versioning
-  - Comparaison de modèles
-  - Déploiement simplifié
+- **Model Management**
+  - Model saving and versioning
+  - Model comparison
+  - Simplified deployment
 
-## Structure du Projet
+## Project Structure
 
 ```
 modelhub/
@@ -49,48 +49,66 @@ modelhub/
 
 ## Installation
 
-1. Cloner le repository :
+1. Clone the repository:
 ```bash
-git clone https://github.com/votre-username/modelhub.git
+git clone https://github.com/your-username/modelhub.git
 cd modelhub
 ```
 
-2. Créer un environnement virtuel :
+2. Create a virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 ```
 
-3. Installer les dépendances :
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Lancer l'application :
+4. Initialize the database:
+```bash
+python init_db.py
+```
+
+5. Launch the application:
 ```bash
 uvicorn main:app --reload
 ```
 
-## Technologies Utilisées
+## Technologies Used
 
 - FastAPI
 - SQLAlchemy
 - Pydantic
 - Scikit-learn
-- TensorFlow/PyTorch
+- PyTorch
 - OpenCV
 - NLTK/spaCy
 
-## Contribution
+## Current Status
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
-1. Fork le projet
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Ouvrir une Pull Request
+The project is currently in development with the following features implemented:
+- Basic project structure
+- Database models and configuration
+- Web interface with Bootstrap
+- API endpoints for model management
+- Preprocessing infrastructure
 
-## Licence
+Known Issues:
+- Models are not loading in the web interface (404 error on /api/v1/models)
+- Database initialization needs to be fixed
+- Need to verify SQLAlchemy model relationships
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+## Contributing
+
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest new features
+- Submit pull requests
+- Improve documentation
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
