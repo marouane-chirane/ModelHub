@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModelHub - Plateforme de Machine Learning</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-robot me-2"></i>ModelHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tooltip" title="Documentation">
+                            <i class="fas fa-book"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="tooltip" title="Paramètres">
+                            <i class="fas fa-cog"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                                <i class="fas fa-chart-line me-2"></i>Tableau de bord
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('models')">
+                                <i class="fas fa-cube me-2"></i>Gestion des modèles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('training')">
+                                <i class="fas fa-graduation-cap me-2"></i>Entraînement
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('predictions')">
+                                <i class="fas fa-magic me-2"></i>Prédictions
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <h2 class="mb-4">Tableau de bord</h2>
+                    
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Modèles disponibles</h5>
+                                    <h2 id="total-models">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Modèles entraînés</h5>
+                                    <h2 id="trained-models">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Prédictions effectuées</h5>
+                                    <h2 id="total-predictions">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Performances des modèles</h5>
+                            <canvas id="performance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Models Section -->
+                <div id="models" class="section">
+                    <h2 class="mb-4">Gestion des modèles</h2>
+                    
+                    <!-- Create Model Form -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Créer un nouveau modèle</h5>
+                            <form id="create-model-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="form-label">Nom du modèle</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="type" class="form-label">Type de modèle</label>
+                                        <select class="form-select" id="type" name="type" required>
+                                            <option value="Classification">Classification</option>
+                                            <option value="Regression">Régression</option>
+                                            <option value="Clustering">Clustering</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="framework" class="form-label">Framework</label>
+                                        <select class="form-select" id="framework" name="framework" required>
+                                            <option value="sklearn">Scikit-learn</option>
+                                            <option value="pytorch">PyTorch</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control" id="description" name="description" rows="1"></textarea>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hyperparameters" class="form-label">Hyperparamètres (JSON)</label>
+                                    <textarea class="form-control" id="hyperparameters" name="hyperparameters" rows="3">{}</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Créer le modèle</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Models List -->
+                    <div class="row" id="models-container">
+                        <!-- Models will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Training Section -->
+                <div id="training" class="section">
+                    <h2 class="mb-4">Entraînement</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Entraîner un modèle</h5>
+                            <form id="training-form">
+                                <div class="mb-3">
+                                    <label for="model-select" class="form-label">Sélectionner un modèle</label>
+                                    <select class="form-select" id="model-select" required>
+                                        <!-- Models will be dynamically added here -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="training-file" class="form-label">Données d'entraînement</label>
+                                    <input type="file" class="form-control" id="training-file" accept=".csv,.json" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Démarrer l'entraînement</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Predictions Section -->
+                <div id="predictions" class="section">
+                    <h2 class="mb-4">Prédictions</h2>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Faire des prédictions</h5>
+                            <form id="prediction-form">
+                                <div class="mb-3">
+                                    <label for="prediction-model-select" class="form-label">Sélectionner un modèle</label>
+                                    <select class="form-select" id="prediction-model-select" required>
+                                        <!-- Models will be dynamically added here -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="prediction-file" class="form-label">Données pour la prédiction</label>
+                                    <input type="file" class="form-control" id="prediction-file" accept=".csv,.json" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Faire des prédictions</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="card mt-4" id="prediction-results" style="display: none;">
+                        <div class="card-body">
+                            <h5 class="card-title">Résultats</h5>
+                            <div id="results-container">
+                                <!-- Results will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert" class="alert" role="alert"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 
