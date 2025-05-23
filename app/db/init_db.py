@@ -2,25 +2,40 @@ from sqlalchemy.orm import Session
 from app.models.base import Base
 from app.db.session import engine, SessionLocal
 from app.models.ml_model import MLModel
+from app.models.user import User
+from app.core.security import get_password_hash, generate_uuid
 
 def init_db() -> None:
-    """Initialise la base de données."""
-    # Créer toutes les tables
+    """Initialize the database."""
+    # Create all tables
     Base.metadata.create_all(bind=engine)
     
-    # Créer une session
+    # Create a session
     db = SessionLocal()
     
     try:
-        # Vérifier si des modèles existent déjà
+        # Check if admin user exists
+        admin = db.query(User).filter(User.email == "admin@modelhub.com").first()
+        if not admin:
+            admin = User(
+                id=generate_uuid(),
+                email="admin@modelhub.com",
+                username="admin",
+                hashed_password=get_password_hash("admin123"),  # Change this in production!
+                is_superuser=True,
+            )
+            db.add(admin)
+            db.commit()
+        
+        # Check if models exist
         if db.query(MLModel).first() is None:
-            # Créer des modèles de test
+            # Create test models
             test_models = [
                 MLModel(
                     name="Random Forest Classifier",
                     type="Classification",
                     framework="sklearn",
-                    description="Classificateur Random Forest pour la classification binaire",
+                    description="Random Forest Classifier for binary classification",
                     hyperparameters={
                         "n_estimators": 100,
                         "max_depth": 10
@@ -30,7 +45,7 @@ def init_db() -> None:
                     name="Neural Network",
                     type="Classification",
                     framework="pytorch",
-                    description="Réseau de neurones pour la classification d'images",
+                    description="Neural Network for image classification",
                     hyperparameters={
                         "hidden_layers": [128, 64],
                         "learning_rate": 0.001
@@ -38,11 +53,11 @@ def init_db() -> None:
                 )
             ]
             
-            # Ajouter les modèles à la base de données
+            # Add models to database
             for model in test_models:
                 db.add(model)
             
-            # Sauvegarder les changements
+            # Save changes
             db.commit()
     finally:
         db.close()
