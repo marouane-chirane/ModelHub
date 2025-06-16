@@ -52,4 +52,9 @@ logs/
 
 # Fichiers système
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Docker
+.docker/
+docker-compose.override.yml
+*.env 
