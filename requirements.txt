@@ -20,11 +20,13 @@ matplotlib
 seaborn
 python-dotenv
 pytest
-streamlit
 plotly
 httpx
-jinja2
 # Testing
 pytest==7.4.3
 pytest-cov==4.1.0
-httpx==0.25.1 
+httpx==0.25.1
+# Time Series
+statsmodels==0.14.0
+prophet==1.1.4
+tensorflow==2.15.0

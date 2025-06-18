@@ -1,114 +1,112 @@
-# ModelHub - Machine Learning and Deep Learning Platform
+# ModelHub - Machine Learning API
 
-ModelHub is a comprehensive platform for managing, training, and deploying machine learning and deep learning models in a simple and efficient way.
+ModelHub est une API REST complète pour la gestion, l'entraînement et le déploiement de modèles de machine learning et deep learning.
 
-## Main Features
+## Fonctionnalités Principales
 
-- **Data Preprocessing**
-  - Text processing
-  - Image processing
-  - Data cleaning and preparation
+- **Gestion des Modèles**
+  - CRUD complet pour les modèles ML et DL
+  - Sauvegarde et versioning des modèles
+  - Comparaison de modèles
 
-- **Model Training**
-  - Intuitive user interface
-  - Hyperparameter configuration
-  - Real-time performance monitoring
-  - Results visualization
+- **Entraînement**
+  - Entraînement de modèles ML (Scikit-learn)
+  - Entraînement de modèles DL (PyTorch)
+  - Entraînement de séries temporelles (ARIMA, SARIMA, Prophet, LSTM)
 
-- **Model Management**
-  - Model saving and versioning
-  - Model comparison
-  - Simplified deployment
-
-## Project Structure
-
-```
-modelhub/
-├── app/
-│   ├── api/
-│   │   ├── endpoints/
-│   │   └── dependencies.py
-│   ├── core/
-│   │   ├── config.py
-│   │   └── security.py
-│   ├── models/
-│   │   ├── ml_models/
-│   │   └── dl_models/
-│   ├── preprocessing/
-│   │   ├── text/
-│   │   └── image/
-│   ├── services/
-│   │   ├── training/
-│   │   └── evaluation/
-│   └── utils/
-├── tests/
-├── alembic/
-├── requirements.txt
-└── main.py
-```
+- **Prédictions**
+  - API de prédiction en temps réel
+  - Batch predictions
+  - Évaluation des performances
 
 ## Installation
 
-1. Clone the repository:
+1. Cloner le repository :
 ```bash
 git clone https://github.com/your-username/modelhub.git
 cd modelhub
 ```
 
-2. Create a virtual environment:
+2. Créer un environnement virtuel :
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 ```
 
-3. Install dependencies:
+3. Installer les dépendances :
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Initialize the database:
+4. Initialiser la base de données :
 ```bash
 python init_db.py
 ```
 
-5. Launch the application:
+5. Lancer l'API :
 ```bash
-uvicorn main:app --reload
+python run.py
 ```
 
-## Technologies Used
+## Utilisation de l'API
 
-- FastAPI
-- SQLAlchemy
-- Pydantic
-- Scikit-learn
-- PyTorch
-- OpenCV
-- NLTK/spaCy
+L'API sera accessible aux adresses suivantes :
+- **API Root** : http://localhost:8000
+- **Documentation interactive** : http://localhost:8000/docs
+- **Documentation alternative** : http://localhost:8000/redoc
 
-## Current Status
+### Endpoints Principaux
 
-The project is currently in development with the following features implemented:
-- Basic project structure
-- Database models and configuration
-- Web interface with Bootstrap
-- API endpoints for model management
-- Preprocessing infrastructure
+#### Modèles
+- `GET /api/v1/models` - Lister tous les modèles
+- `POST /api/v1/models` - Créer un nouveau modèle
+- `GET /api/v1/models/{id}` - Récupérer un modèle
+- `PUT /api/v1/models/{id}` - Mettre à jour un modèle
+- `DELETE /api/v1/models/{id}` - Supprimer un modèle
+- `POST /api/v1/models/{id}/train` - Entraîner un modèle
+- `POST /api/v1/models/{id}/predict` - Faire des prédictions
 
-Known Issues:
-- Models are not loading in the web interface (404 error on /api/v1/models)
-- Database initialization needs to be fixed
-- Need to verify SQLAlchemy model relationships
+#### Séries Temporelles
+- `POST /api/v1/time-series/upload` - Uploader des données
+- `POST /api/v1/time-series/train` - Entraîner un modèle de séries temporelles
+- `GET /api/v1/time-series/models` - Lister les modèles de séries temporelles
 
-## Contributing
+## Technologies Utilisées
 
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
-- Improve documentation
+- **Backend** : FastAPI
+- **Base de données** : SQLAlchemy + SQLite/PostgreSQL
+- **ML/DL** : Scikit-learn, PyTorch, TensorFlow
+- **Séries temporelles** : Statsmodels, Prophet
+- **Tests** : Pytest
 
-## License
+## Structure du Projet
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+```
+modelhub/
+├── app/
+│   ├── api/
+│   │   └── endpoints/
+│   ├── core/
+│   ├── db/
+│   ├── models/
+│   ├── schemas/
+│   └── services/
+├── tests/
+├── requirements.txt
+└── run.py
+```
+
+## Tests
+
+```bash
+# Exécuter tous les tests
+pytest
+
+# Exécuter les tests avec couverture
+pytest --cov=app
+```
+
+## Licence
+
+Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
