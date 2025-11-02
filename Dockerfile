@@ -13,15 +13,24 @@ RUN apt-get update && apt-get install -y \
 # Copier les fichiers de dépendances
 COPY requirements.txt .
 
-# Installer les dépendances Python
+# Installer PyTorch CPU-first (beaucoup plus léger que CUDA)
+# Cela évite de télécharger 2GB+ de dépendances CUDA inutiles
+RUN pip install --default-timeout=300 --retries=5 \
+    torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Installer les autres dépendances (sans torch/torchvision)
 # Use layer cache when requirements.txt unchanged
-RUN pip install -r requirements.txt
+RUN pip install --default-timeout=300 --retries=5 -r requirements.txt
 
 # Copier le reste du code
 COPY . .
 
+# Rendre le script de démarrage exécutable
+RUN chmod +x docker-entrypoint.sh
+
 # Exposer le port sur lequel l'application va s'exécuter
 EXPOSE 8000
 
-# Commande pour démarrer l'application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Utiliser le script d'entrée pour initialiser la DB et démarrer l'API
+# Utiliser sh pour éviter les problèmes de permissions
+ENTRYPOINT ["sh", "docker-entrypoint.sh"] 

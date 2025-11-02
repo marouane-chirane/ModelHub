@@ -1,7 +1,9 @@
 fastapi
 uvicorn
 sqlalchemy
+psycopg2-binary
 pydantic
+pydantic[email]
 pydantic-settings
 python-multipart
 python-jose[cryptography]
@@ -10,8 +12,10 @@ alembic
 numpy
 pandas
 # Core CV stack
-torch
-torchvision
+# PyTorch installé séparément dans Dockerfile avec --index-url CPU (beaucoup plus léger ~150MB vs 2GB+)
+# Pour GPU: modifier Dockerfile et décommenter torch/torchvision ci-dessous
+# torch
+# torchvision
 opencv-python
 pillow
 matplotlib

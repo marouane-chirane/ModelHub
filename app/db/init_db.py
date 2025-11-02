@@ -9,28 +9,28 @@ from app.core.security import get_password_hash, generate_uuid
 
 
 def init_db() -> None:
-    """Initialize the database."""
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
-    
-    # Create a session
-    db = SessionLocal()
-    
-    try:
+	"""Initialize the database."""
+	# Create all tables
+	Base.metadata.create_all(bind=engine)
+	
+	# Create a session
+	db = SessionLocal()
+	
+	try:
 		# Ensure admin user exists
-        admin = db.query(User).filter(User.email == "admin@modelhub.com").first()
-        if not admin:
-            admin = User(
-                id=generate_uuid(),
-                email="admin@modelhub.com",
-                username="admin",
+		admin = db.query(User).filter(User.email == "admin@modelhub.com").first()
+		if not admin:
+			admin = User(
+				id=generate_uuid(),
+				email="admin@modelhub.com",
+				username="admin",
 				hashed_password=get_password_hash("admin123"),
-                is_superuser=True,
-            )
-            db.add(admin)
-            db.commit()
+				is_superuser=True,
+			)
+			db.add(admin)
+			db.commit()
 			db.refresh(admin)
-        
+		
 		# Seed example DL model if empty
 		if db.query(DLModel).first() is None:
 			seed_dl = [
@@ -44,16 +44,16 @@ def init_db() -> None:
 			]
 			for m in seed_dl:
 				db.add(m)
-            db.commit()
-    finally:
-        db.close()
+			db.commit()
+	finally:
+		db.close()
 
 
 if __name__ == "__main__":
-    init_db()
+	init_db()
 
 
 def init_test_data(db: Session) -> None:
-    """Initialise des données de test."""
-    # TODO: Ajouter des données de test si nécessaire
-    pass 
+	"""Initialise des données de test."""
+	# TODO: Ajouter des données de test si nécessaire
+	pass
