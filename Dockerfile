@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # Installer les dépendances Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Use layer cache when requirements.txt unchanged
+RUN pip install -r requirements.txt
 
 # Copier le reste du code
 COPY . .

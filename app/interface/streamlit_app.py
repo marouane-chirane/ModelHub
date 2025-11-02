@@ -6,6 +6,7 @@ import plotly.express as px
 from typing import Dict, Any
 import os
 from datetime import datetime
+from streamlit_drawable_canvas import st_canvas
 
 # Configuration de la page
 st.set_page_config(
@@ -44,7 +45,7 @@ def call_api(endpoint: str, method: str = "GET", data: Dict[str, Any] = None) ->
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Choisir une section",
-    ["Tableau de bord", "Gestion des modèles", "Entraînement", "Prédictions"]
+    ["Tableau de bord", "Gestion des modèles", "Entraînement", "Prédictions", "Pipelines", "Datasets", "Annotation", "Export"]
 )
 
 # Tableau de bord
@@ -179,3 +180,131 @@ elif page == "Prédictions":
             # Affichage des résultats
             st.subheader("Résultats")
             # TODO: Afficher les résultats des prédictions 
+
+elif page == "Pipelines":
+    st.header("🧱 Pipelines")
+    st.markdown("Exécuter un pipeline et visualiser les étapes.")
+
+    with st.form("run_pipeline_form"):
+        kind = st.selectbox("Type de pipeline", [
+            "cv_classification",
+            "cv_detection",
+            "cv_segmentation",
+        ])
+        dataset_path = st.text_input("Chemin du dataset (dossier)")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            epochs = st.number_input("Epochs", min_value=1, max_value=100, value=1)
+        with col2:
+            train_ratio = st.slider("Train ratio", 0.5, 0.95, 0.8)
+        with col3:
+            lr = st.number_input("Learning rate", min_value=1e-5, max_value=1e-1, value=1e-3, format="%f")
+
+        submitted = st.form_submit_button("Lancer")
+
+    if submitted:
+        payload = {
+            "kind": kind,
+            "config": {
+                "dataset_path": dataset_path,
+                "epochs": int(epochs),
+                "train_ratio": float(train_ratio),
+                "lr": float(lr),
+            },
+        }
+        result = call_api("pipelines/run", method="POST", data=payload)
+        if result:
+            st.success(f"Pipeline: {result.get('name')} - Statut: {result.get('status')}")
+            steps = result.get("steps", [])
+            for step in steps:
+                col1, col2, col3, col4 = st.columns([3, 2, 3, 4])
+                col1.write(f"Étape: {step.get('name')}")
+                col2.write(f"Statut: {step.get('status')}")
+                col3.write(f"Début: {step.get('started_at')}")
+                col4.write(f"Fin: {step.get('finished_at')}")
+            if result.get("metrics"):
+                st.subheader("Métriques")
+                st.json(result.get("metrics")) 
+
+elif page == "Datasets":
+    st.header("📂 Datasets")
+    name = st.text_input("Nom du dataset")
+    desc = st.text_input("Description")
+    if st.button("Créer") and name:
+        resp = call_api("datasets", method="POST", data={"name": name, "description": desc})
+        if resp:
+            st.success(f"Dataset créé: {resp.get('name')}")
+    st.subheader("Liste des datasets")
+    ds = call_api("datasets")
+    if ds:
+        st.dataframe(pd.DataFrame(ds))
+
+elif page == "Annotation":
+    st.header("🖊️ Annotation")
+    ds = call_api("datasets") or []
+    if ds:
+        ds_map = {d["name"]: d["id"] for d in ds}
+        ds_name = st.selectbox("Dataset", list(ds_map.keys()))
+        dataset_id = ds_map[ds_name]
+        images = call_api(f"datasets/{dataset_id}/images") or []
+        col_up, col_path = st.columns([1, 1])
+        with col_up:
+            uploaded = st.file_uploader("Ajouter une image (chemin local pour démo)")
+        with col_path:
+            img_path = st.text_input("Chemin absolu de l'image")
+        if (uploaded or img_path) and st.button("Ajouter l'image"):
+            path = img_path
+            if path:
+                resp = call_api("images", method="POST", data={"dataset_id": dataset_id, "path": path})
+                if resp:
+                    st.success("Image ajoutée")
+                    images = call_api(f"datasets/{dataset_id}/images") or []
+        if images:
+            img_map = {i["path"]: i["id"] for i in images}
+            img_sel = st.selectbox("Image", list(img_map.keys()))
+            image_id = img_map[img_sel]
+            st.write("Dessiner des bounding boxes (rectangles).")
+            canvas_result = st_canvas(
+                fill_color="rgba(255, 0, 0, 0.2)",
+                stroke_width=2,
+                stroke_color="#ff0000",
+                background_image=None,
+                background_color="#eee",
+                height=480,
+                width=640,
+                drawing_mode="rect",
+                key="canvas",
+            )
+            label = st.text_input("Label")
+            if st.button("Enregistrer annotations") and canvas_result and canvas_result.json_data:
+                for obj in canvas_result.json_data.get("objects", []):
+                    if obj.get("type") == "rect" and label:
+                        left = float(obj.get("left", 0.0)) / 640.0
+                        top = float(obj.get("top", 0.0)) / 480.0
+                        width = float(obj.get("width", 0.0)) / 640.0
+                        height = float(obj.get("height", 0.0)) / 480.0
+                        call_api("annotations", method="POST", data={
+                            "image_id": image_id,
+                            "label": label,
+                            "x": left,
+                            "y": top,
+                            "w": width,
+                            "h": height,
+                        })
+                st.success("Annotations enregistrées")
+
+elif page == "Export":
+    st.header("📦 Export")
+    ds = call_api("datasets") or []
+    if ds:
+        ds_map = {d["name"]: d["id"] for d in ds}
+        ds_name = st.selectbox("Dataset", list(ds_map.keys()))
+        dataset_id = ds_map[ds_name]
+        fmt = st.selectbox("Format", ["COCO", "YOLO"])
+        if st.button("Exporter"):
+            if fmt == "COCO":
+                data = call_api(f"datasets/{dataset_id}/export/coco")
+                st.json(data)
+            else:
+                data = call_api(f"datasets/{dataset_id}/export/yolo")
+                st.json(data) 

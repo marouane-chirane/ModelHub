@@ -12,6 +12,16 @@ services:
       - SECRET_KEY=your-secret-key-here
     depends_on:
       - db
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://web:8000/api/v1
+    depends_on:
+      - web
 
   db:
     image: postgres:13

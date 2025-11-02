@@ -49,12 +49,21 @@ python init_db.py
 python run.py
 ```
 
+6. Lancer le Frontend React (Vite) :
+```bash
+cd frontend
+npm i
+npm run dev
+# Frontend: http://localhost:5173 (configure l'API via VITE_API_URL)
+```
+
 ## Utilisation de l'API
 
 L'API sera accessible aux adresses suivantes :
 - **API Root** : http://localhost:8000
 - **Documentation interactive** : http://localhost:8000/docs
 - **Documentation alternative** : http://localhost:8000/redoc
+ - **Frontend React** : http://localhost:5173
 
 ### Endpoints Principaux
 
@@ -79,6 +88,7 @@ L'API sera accessible aux adresses suivantes :
 - **ML/DL** : Scikit-learn, PyTorch, TensorFlow
 - **Séries temporelles** : Statsmodels, Prophet
 - **Tests** : Pytest
+ - **Frontend** : React (Vite, TypeScript)
 
 ## Structure du Projet
 
